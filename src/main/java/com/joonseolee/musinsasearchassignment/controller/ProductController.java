@@ -1,5 +1,6 @@
 package com.joonseolee.musinsasearchassignment.controller;
 
+import com.joonseolee.musinsasearchassignment.model.BaseResponse;
 import com.joonseolee.musinsasearchassignment.model.BrandLowest;
 import com.joonseolee.musinsasearchassignment.model.ProductLowest;
 import com.joonseolee.musinsasearchassignment.model.ProductLowestHighest;
@@ -26,8 +27,8 @@ public class ProductController {
     }
 
     @GetMapping("/classifications/categories")
-    public ProductLowest.Response getLowestProducts() {
-        return proxy.getLowestProductsCache();
+    public BaseResponse<ProductLowest.Response> getLowestProducts() {
+        return new BaseResponse<>(proxy.getLowestProductsCache());
     }
 
     @Cacheable(value = "ProductLowestResponse", key = "#root.method.name")
@@ -36,12 +37,12 @@ public class ProductController {
     }
 
     @GetMapping("/classifications/categories/{categoryId}")
-    public ProductLowestHighest.Response getLowestProductsByCategory(@PathVariable Long categoryId) {
-        return productService.getLowestProductByCategory(categoryId);
+    public BaseResponse<ProductLowestHighest.Response> getLowestProductsByCategory(@PathVariable Long categoryId) {
+        return new BaseResponse<>(productService.getLowestProductByCategory(categoryId));
     }
 
     @GetMapping("/classifications/brands")
-    public BrandLowest.Response getLowestBrand() {
-        return productService.getLowestBrand();
+    public BaseResponse<BrandLowest.Response> getLowestBrand() {
+        return new BaseResponse<>(productService.getLowestBrand());
     }
 }

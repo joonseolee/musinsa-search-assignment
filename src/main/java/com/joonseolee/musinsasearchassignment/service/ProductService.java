@@ -1,6 +1,8 @@
 package com.joonseolee.musinsasearchassignment.service;
 
+import com.joonseolee.musinsasearchassignment.exception.MusinsaException;
 import com.joonseolee.musinsasearchassignment.model.BrandLowest;
+import com.joonseolee.musinsasearchassignment.model.ErrorStatusType;
 import com.joonseolee.musinsasearchassignment.model.ProductLowest;
 import com.joonseolee.musinsasearchassignment.model.ProductLowestHighest;
 import com.joonseolee.musinsasearchassignment.repository.ProductCategoryRepository;
@@ -46,7 +48,7 @@ public class ProductService {
 
     public ProductLowestHighest.Response getLowestProductByCategory(Long categoryId) {
         var productCategory = productCategoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Not Found...."));
+                .orElseThrow(() -> new MusinsaException(ErrorStatusType.NOT_FOUND_DATA_500));
 
         var lowestProduct = productRepository.findLowestByProductCategory(productCategory);
         var highestProduct = productRepository.findHighestByProductCategory(productCategory);
