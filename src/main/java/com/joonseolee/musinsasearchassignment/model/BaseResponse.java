@@ -38,6 +38,11 @@ public class BaseResponse<T> {
         this.body = null;
     }
 
+    public static BaseResponse<Void> ok() {
+        var header = new Header(true, 0, null);
+        return new BaseResponse<>(header, null);
+    }
+
     @AllArgsConstructor
     public static class Header {
         private final boolean isSuccessful;
