@@ -6,8 +6,6 @@ import com.joonseolee.musinsasearchassignment.model.ProductLowest;
 import com.joonseolee.musinsasearchassignment.model.ProductLowestHighest;
 import com.joonseolee.musinsasearchassignment.service.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,25 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductController {
 
     private final ProductService productService;
-    private ProductController proxy;
-
-    @Autowired
-    public void setProxy(ProductController proxy) {
-        this.proxy = proxy;
-    }
 
     @GetMapping("/classifications/categories")
     public BaseResponse<ProductLowest.Response> getLowestProducts() {
-        return new BaseResponse<>(proxy.getLowestProductsCache());
-    }
-
-    @Cacheable(value = "ProductLowestResponse", key = "#root.method.name")
-    public ProductLowest.Response getLowestProductsCache() {
-        return productService.getLowestProducts();
+        return new BaseResponse<>(productService.getLowestProducts());
     }
 
     @GetMapping("/classifications/categories/{categoryId}")
-    public BaseResponse<ProductLowestHighest.Response> getLowestProductsByCategory(@PathVariable Long categoryId) {
+    public BaseResponse<ProductLowestHighest.Response> getLowestProductsByCategory(@PathVariable long categoryId) {
         return new BaseResponse<>(productService.getLowestProductByCategory(categoryId));
     }
 

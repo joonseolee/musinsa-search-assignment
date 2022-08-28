@@ -8,6 +8,7 @@ import com.joonseolee.musinsasearchassignment.model.ProductLowestHighest;
 import com.joonseolee.musinsasearchassignment.repository.ProductCategoryRepository;
 import com.joonseolee.musinsasearchassignment.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductCategoryRepository productCategoryRepository;
 
+    @Cacheable(value = "ProductLowestResponse", key = "#root.method.name")
     public ProductLowest.Response getLowestProducts() {
         var productCategories = productCategoryRepository.findAll();
 
