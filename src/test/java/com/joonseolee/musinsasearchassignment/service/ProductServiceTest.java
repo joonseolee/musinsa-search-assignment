@@ -1,15 +1,15 @@
 package com.joonseolee.musinsasearchassignment.service;
 
-import com.joonseolee.musinsasearchassignment.entity.Brand;
-import com.joonseolee.musinsasearchassignment.entity.Product;
-import com.joonseolee.musinsasearchassignment.entity.ProductCategory;
+import com.joonseolee.musinsasearchassignment.entity.*;
 import com.joonseolee.musinsasearchassignment.model.BrandLowest;
+import com.joonseolee.musinsasearchassignment.repository.BrandRepository;
 import com.joonseolee.musinsasearchassignment.repository.ProductCategoryRepository;
 import com.joonseolee.musinsasearchassignment.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
@@ -30,6 +30,10 @@ class ProductServiceTest {
     private ProductRepository productRepository;
     @Mock
     private ProductCategoryRepository productCategoryRepository;
+    @Mock
+    private BrandRepository brandRepository;
+    @Spy
+    private ProductMapper productMapper = new ProductMapperImpl();
 
     @Test
     void givenNothing_whenGetLowestBrand_thenSuccess() {
@@ -67,6 +71,7 @@ class ProductServiceTest {
         assertEquals(2, result.getProducts().size());
         assertEquals(49000, result.getTotalPrice());
     }
+
 
     List<ProductCategory> generateProductCategories() {
         var one = new ProductCategory();

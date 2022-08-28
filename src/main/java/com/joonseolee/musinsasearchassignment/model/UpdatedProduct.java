@@ -5,15 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class UpdatedBrand {
+public class UpdatedProduct {
 
     @Getter
     @NoArgsConstructor
     public static class Request {
         private String name;
-
-        public Request(String name) {
-            this.name = name;
-        }
+        private Long price;
+        private Long brandId;
+        private Long productCategoryId;
     }
 }

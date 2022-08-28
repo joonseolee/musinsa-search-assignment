@@ -1,10 +1,9 @@
 package com.joonseolee.musinsasearchassignment.service;
 
+import com.joonseolee.musinsasearchassignment.entity.ProductMapper;
 import com.joonseolee.musinsasearchassignment.exception.MusinsaException;
-import com.joonseolee.musinsasearchassignment.model.BrandLowest;
-import com.joonseolee.musinsasearchassignment.model.ErrorStatusType;
-import com.joonseolee.musinsasearchassignment.model.ProductLowest;
-import com.joonseolee.musinsasearchassignment.model.ProductLowestHighest;
+import com.joonseolee.musinsasearchassignment.model.*;
+import com.joonseolee.musinsasearchassignment.repository.BrandRepository;
 import com.joonseolee.musinsasearchassignment.repository.ProductCategoryRepository;
 import com.joonseolee.musinsasearchassignment.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +20,8 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductCategoryRepository productCategoryRepository;
+    private final BrandRepository brandRepository;
+    private final ProductMapper productMapper;
 
     @Cacheable(value = "ProductLowestResponse", key = "#root.method.name")
     public ProductLowest.Response getLowestProducts() {
@@ -60,5 +61,50 @@ public class ProductService {
                 lowestProduct.getPrice(),
                 highestProduct.getBrand().getName(),
                 highestProduct.getPrice());
+    }
+
+    public InsertedProduct.Response insertProduct(InsertedProduct.Request request) {
+        if (Objects.isNull(request)) {
+            throw new MusinsaException(ErrorStatusType.NOT_FOUND_PARAMETERS_400);
+        }
+        var product = productMapper.toProduct(request);
+        var brand = brandRepository.findById(request.getBrandId())
+                .orElseThrow(() -> new MusinsaException(ErrorStatusType.NOT_FOUND_DATA_500));
+        product.setBrand(brand);
+        var productCategory = productCategoryRepository.findById(request.getProductCategoryId())
+                .orElseThrow(() -> new MusinsaException(ErrorStatusType.NOT_FOUND_DATA_500));
+        product.setProductCategory(productCategory);
+
+        var savedProduct = productRepository.save(product);
+        return productMapper.toInsertedProductResponse(savedProduct);
+    }
+
+    public void updateProduct(long id, UpdatedProduct.Request request) {
+        if (Objects.isNull(request)) {
+            throw new MusinsaException(ErrorStatusType.NOT_FOUND_PARAMETERS_400);
+        }
+
+        var product = productRepository.findById(id)
+                .orElseThrow(() -> new MusinsaException(ErrorStatusType.NOT_FOUND_DATA_500));
+
+        productMapper.updateProductFromUpdatedProductRequest(product, request);
+
+        if (!Objects.isNull(request.getBrandId())) {
+            var brand = brandRepository.findById(request.getBrandId())
+                    .orElseThrow(() -> new MusinsaException(ErrorStatusType.NOT_FOUND_DATA_500));
+            product.setBrand(brand);
+        }
+
+        if (!Objects.isNull(request.getProductCategoryId())) {
+            var productCategory = productCategoryRepository.findById(request.getProductCategoryId())
+                    .orElseThrow(() -> new MusinsaException(ErrorStatusType.NOT_FOUND_DATA_500));
+            product.setProductCategory(productCategory);
+        }
+
+        productRepository.save(product);
+    }
+
+    public void deleteProduct(long id) {
+        productRepository.deleteById(id);
     }
 }
